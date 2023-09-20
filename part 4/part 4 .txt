@@ -1,0 +1,36 @@
+1.
+	cat >> config.txt << EOF
+	key1=value1
+	key2=value2
+	EOF
+	cat config.txt
+	
+
+2.	kubectl create configmap keyvalcfgmap --from-file=config.txt
+	kubectl get configmap keyvalcfgmap
+
+3.
+
+*********    nginx-pod.yml **************
+
+apiVersion: v1
+kind: Pod
+metadata:
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    envFrom:
+    - configMapRef:
+        name: keyvalcfgmap
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+
+*********    nginx-pod.yml **************
+
+kubectl apply -f nginx-pod.yml
+
+kubectl delete pod nginx-pod

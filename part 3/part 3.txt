@@ -1,0 +1,142 @@
+1.	kubectl create deploy webapp --image=nginx --dry-run -o yaml > webapp.yaml
+	
+	vim webapp.yaml #(change replica to 5)
+	
+	cat webapp.yaml
+*****output******
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+
+*****output******
+
+2.	kubectl rollout status deployment webapp
+
+3.	kubectl get rs -l app=webapp
+
+5.	kubectl delete deployment webapp
+
+6.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webapp
+    spec:
+      ports:
+      - containerPort: 80
+      containers:
+      - image: nginx:1.17.1
+        name: nginx
+        resources: {}
+status: {}
+
+	kubectl apply -f webapp.yaml
+
+7.	kubectl set image deployment/webapp webapp=nginx:1.17.4
+
+8.	kubectl rollout history deployment webapp
+
+9.	kubectl rollout undo deployment webapp 
+
+10.	kubectl set image deployment/webapp webapp=nginx:1.100
+
+	kubectl rollout undo deployment webapp
+	
+	kubectl rollout history deployment webapp --revision=7
+	
+	kubectl set image deployment/webapp webapp=nginx:latest
+	
+	kubectl rollout history deployment webapp
+
+11.
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: webapp
+  minReplicas: 10
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 85
+
+kubectl apply -f autoscale.yaml
+
+13 .	kubectl delete deployment webapp
+	
+	kubectl delete hpa webapp-hpa
+
+
+14.	
+ 
+kubectl create job hello-job --image=busybox --dry-run=client -o yaml -- echo "Hello I am from job" > hello-job.yaml  
+
+cat hello-job.yaml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: hello-job
+spec:
+  completions: 10
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - echo
+        - Hello I am from job
+        image: busybox
+        name: hello-job
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+
+kubectl apply -f hello-job.yaml

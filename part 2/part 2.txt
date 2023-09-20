@@ -1,0 +1,119 @@
+1.	kubectl get pods --show-labels
+
+2.
+
+***  q2.yaml  ***:
+	
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-dev-1
+  labels:
+    env: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-dev-2
+  labels:
+    env: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-dev-3
+  labels:
+    env: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-prod-1
+  labels:
+    env: prod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-prod-2
+  labels:
+    env: prod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+***  q2.yaml  ***
+
+kubectl apply -f q2.yaml
+
+3.	kubectl get pods --show-labels
+
+4.	kubectl get pods -l env=dev
+
+5.	kubectl get pods -l env=dev --show-labels
+
+6.	kubectl get pods -l env=prod
+
+7.	kubectl get pods -l env=prod --show-labels
+
+8.	kubectl get pods -l env
+
+9.	kubectl get pods -l env=dev,env=prod
+
+10.	kubectl get pods -l env=dev,env=prod --show-labels
+
+11.	kubectl label pod nginx-dev-1 env=uat --overwrite
+
+	kubectl get pods --show-labels
+
+12.	 kubectl label pod --all env-
+
+13.	kubectl label pod --all app=nginx
+
+14.	kubectl get nodes --show-labels
+
+15.	kubectl label node minikube nodeName=nginxnode
+
+16.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  nodeSelector:  
+  containers:
+  - image: nginx
+    name: nginx
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}

@@ -1,0 +1,180 @@
+1.	kubectl run nginx-pod-yarin --image=nginx:alpine
+
+2.	kubectl run messaging --image=redis:alpine --labels=tier=msg
+
+3.	kubectl create namespace apx-x998-yarin
+
+4.	kubectl get nodes --output=json > /tmp/nodes-yarin.json
+
+5.	kubectl expose pod messaging --port=6379 --target-port=6379 --name=messaging-service -l tier=msg
+
+6.
+***  messaging-service.yaml  ***:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+spec:
+  selector:
+    tier: msg
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+  type: ClusterIP
+
+***  messaging-service.yaml  ***:
+
+kubectl apply -f messaging-service.yaml
+
+7.	kubectl create deployment hr-web-app --image=kodekloud/webapp-color --replicas=2
+
+8.
+***  static-busybox.yaml  ***:	
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-busybox
+spec:
+  containers:
+  - name: static-busybox
+    image: busybox
+    command: ["sleep", "1000"]
+
+ ***  static-busybox.yaml  ***
+
+sudo mv static-busybox.yaml /etc/kubernetes/manifests
+
+9.	kubectl create namespace finance-yarin
+	kubectl run pod temp-bus --namespace=finance-yarin --image=redis:alpine
+
+10.
+***  pv-analytics.yaml  ***:	
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-analytics
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /pv/data-analytics
+
+***  pv-analytics.yaml  ***
+
+kubectl apply -f pv-analytics.yaml
+
+
+11.	
+***  redis-storage-yarin.yaml  ***
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-storage-yarin
+spec:
+  containers:
+  - name: redis-storage-yarin
+    image: redis:alpine
+    volumeMounts:
+    - name: redis-volume
+      mountPath: /data/redis
+  volumes:
+  - name: redis-volume
+    emptyDir: {}
+
+***  redis-storage-yarin.yaml  ***
+
+kubectl apply -f redis-storage-yarin.yaml
+
+12.
+***  use-pv-yarin.yaml  ***
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: use-pv
+  name: use-pvspec-yarin
+spec:
+  containers:
+  - image: nginx
+    name: use-pv
+    resources: {}
+    volumeMounts:
+    - name: pv-1
+      mountPath: /data
+  volumes:
+  - name: pv-1
+    hostPath:
+      path: /data
+
+***  use-pv-yarin.yaml  ***
+
+kubectl apply -f use-pv-yarin.yaml
+
+13.
+kubectl create deployment nginx-deploy --image=nginx:1.16 --replicas=1
+kubectl set image deployment/nginx-deploy nginx=nginx:1.16 --record
+kubectl rollout history deployment/nginx-deploy
+kubectl set image deployment/nginx-deploy nginx=nginx:1.17 --record
+kubectl rollout status deployment/nginx-deploy
+kubectl rollout history deployment/nginx-deploy
+
+14.
+kubectl run nginx-resolver --image=nginx 
+kubectl expose pod nginx-resolver --port=80 --target-port=80 --name=nginx-resolver-service
+kubectl run busybox --image=busybox:1.28 -it
+nslookup nginx-resolver-service > /root/nginx-yarin.svc
+nslookup nginx-resolver > /root/nginx-yarin.pod
+exit
+
+15.
+***  nginx-critical.yaml  ***
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-critical
+spec:
+  containers:
+    - name: nginx-critical
+      image: nginx
+
+***  nginx-critical.yaml  ***
+
+kubectl apply -f nginx-critical.yaml
+
+sudo mv nginx-critical.yaml /etc/kubernetes/manifests
+
+kubectl delete pod nginx-critical
+
+kubectl get pods
+
+16.
+
+
+***  multi-pod.yaml  ***
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-pod
+spec:
+  containers:
+  - name: alpha
+    image: nginx
+  - name: beta
+    image: busybox
+    command: ["sleep", "4800"]
+
+
+***  multi-pod.yaml  ***
+
+kubectl apply -f multi-pod.yaml
